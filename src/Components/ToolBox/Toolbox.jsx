@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 
 
-import classes from './ToolBox.module.css'
+import classes from './Toolbox.module.css'
 import { FILL_COLORS, COLORS, FILL_TYPE, STROKE_TYPE,SIZE_TYPE, TOOL_ITEMS } from '../../constants'
 import cx from 'classnames'
 import toolBoxContext from '../../store/toolBoxContext'
