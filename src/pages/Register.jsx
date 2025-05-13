@@ -33,21 +33,19 @@ const Register = () => {
         },
         body: JSON.stringify(payload),
       });
+      const result = await response.json();
       if (response.ok) {
         setmessage({
           success:true,
-          message:"Successfully registered"
+          message:"Successfully registered..Redirecting to login page.."
         })
         setsubmit(false);
-        await setTimeout(()=>{
-
-        },1000)
-        navigate('/');
+        setTimeout(() => {navigate('/');}, 1000);
       }
       else{
         setmessage({
-          success:false,
-          message:"failed to register the user"
+          success:false,  
+          message:result?.message||"Failed to register User"
         })
         setsubmit(false);
       }
