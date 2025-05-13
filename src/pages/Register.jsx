@@ -69,7 +69,7 @@ const Register = () => {
           <button type="submit" className={classes.submitButton}>Register</button>
         </form>
         <div className="text-center mt-4">
-          <Link to="/" className="text-blue-600 hover:underline">Alrady have an account? Login here.</Link>
+          <Link to="/" className="text-blue-600 hover:underline">Already have an account? Login here.</Link>
         </div>
       </div>
     </div>
