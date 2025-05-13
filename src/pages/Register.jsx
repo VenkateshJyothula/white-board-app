@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { Form, Link, useActionData, useNavigate } from 'react-router-dom';
 import classes from './Login.module.css';
+import { useState } from 'react';
 
 const Register = () => {
   const actionData = useActionData();
   const navigate = useNavigate();
-
+  const [message,setmessage]=useState({});
   useEffect(() => {
     if (actionData?.success) {
       navigate('/');  
@@ -29,15 +30,19 @@ const Register = () => {
         },
         body: JSON.stringify(payload),
       });
-      const result = await response.json();
       if (response.ok) {
-        alert('Registration successful');
+        setmessage({
+          success:true,
+          message:"Successfully registered"
+        })
         navigate('/');
-      } else {
-        alert(`Registration failed: ${result.message}`);
-      }
+      } 
     } catch (error) {
       alert(`Error: ${error.message}`);
+      setmessage({
+          success:false,
+          message:"user Registration Failed"
+        })
     }
   }
 
@@ -45,8 +50,8 @@ const Register = () => {
     <div className={classes.pageContainer}>
       <div className={classes.formContainer}>
         <h2 className="text-2xl font-bold text-center mb-4">Register</h2>
-        {actionData && (
-          <p className={`${classes.message} ${actionData.success ? 'text-green-600' : 'text-red-600'}`}>{actionData.message}</p>
+        {message!={} && (
+          <p className={`${classes.message} ${message.success ? 'text-green-600' : 'text-red-600'}`}>{message.message}</p>
         )}
         <form onSubmit={handleRegister}>
           <div>
