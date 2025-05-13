@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+.pageContainer {
+    @apply p-8 max-w-3xl mx-auto;
+}
+
+.greeting {
+    @apply text-3xl font-bold mb-6;
+}
+
+.canvasTitle {
+    @apply text-xl font-semibold mb-4;
+}
+
+.canvasGrid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6;
+}
+
+.canvasCard {
+    @apply bg-white shadow-lg rounded-lg p-4 hover:shadow-xl transition duration-200;
+}
+
+.canvasName {
+    @apply text-lg font-medium mb-2;
+}
+
+.canvasDate {
+    @apply text-gray-600 text-sm;
+}
+
+.buttonGroup {
+    @apply flex justify-between mt-3;
+}
+
+.openButton {
+    @apply bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition duration-200;
+}
+
+.deleteButton {
+    @apply bg-red-500 text-white px-3 py-1 rounded-md hover:bg-red-600 transition duration-200;
+}
+
+.noCanvas {
+    @apply text-gray-500;
+}
+
+.loadingText {
+    @apply text-gray-700;
+}
+
+.createCanvas {
+    margin: 1rem 0;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.inputField {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+    flex: 1;
+}
+
+.createButton {
+    background-color: #4caf50;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.createButton:hover {
+    background-color: #45a049;
+}

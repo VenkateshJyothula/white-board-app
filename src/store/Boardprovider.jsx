@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useReducer} from 'react'
 import { TOOL_ITEMS,BOARD_ACTION, TOOL_ACTION_TYPE} from '../constants'
 // eslint-disable-next-line no-unused-vars
@@ -16,6 +16,22 @@ function boardReducer(state,action){
     case BOARD_ACTION.CHANGE_TOOL:{
       return {...state,activeToolItem:action.payload.tool}
     }
+    case BOARD_ACTION.LOAD_ELEMENTS: {
+      const elements = action.payload.elements.map(element => {
+        if (element.type === TOOL_ITEMS.BRUSH && element.points) {
+          element.path = new Path2D(getSvgPathFromStroke(getStroke(element.points)));
+        }
+        if (element.type === TOOL_ITEMS.TEXT && !element.text) {
+          element.text = element.text || "";
+        }
+        return element;
+      });
+      return { ...state, elements };
+    }
+
+
+
+
     case BOARD_ACTION.DRAW_DOWN:{
       const {clientX,clientY,stroke,fill,size}=action.payload;
       const newElement=createElement(state.elements.length,clientX,clientY,clientX,clientY,{type:state.activeToolItem,stroke:stroke,fill:fill,size});
@@ -117,14 +133,57 @@ function boardReducer(state,action){
   }
 }
 
-const initialBoardState={
-  activeToolItem:TOOL_ITEMS.BRUSH,
-  elements:[],
-  history:[],
-  toolActionType:TOOL_ACTION_TYPE.NONE,
+const BoardProvider = ({id,children}) => {
+  const initialBoardState = {
+  activeToolItem: TOOL_ITEMS.BRUSH,
+  elements: [],
+  history: [],
+  toolActionType: TOOL_ACTION_TYPE.NONE,
+};
+
+const [boardState, dispatchBoardAction] = useReducer(boardReducer, initialBoardState);
+const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  async function getElements(id) {
+    const token = localStorage.getItem("TOKEN");
+    try {
+      const response = await fetch(`https://backend-li1v.onrender.com/api/canvas/${id}`, {
+        method: 'GET',
+        headers: {
+          'Authorization': token,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      // Update board state when data is loaded
+      dispatchBoardAction({
+      type: BOARD_ACTION.LOAD_ELEMENTS,
+      payload: { elements: result?.[0]?.elements || [] },
+      });
+
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+      setLoading(false);
+    }
+  }
+
+  getElements(id);
+}, [id]);
+
+if (loading) {
+  return <div>Loading...</div>;
 }
-const BoardProvider = ({children}) => {
-  const [boardState,dispatchBoardAction]=useReducer(boardReducer,initialBoardState);;
+
+
   
 
 
@@ -188,16 +247,49 @@ const BoardProvider = ({children}) => {
           });
         }
       };
-    function boardMOuseUpHandler()
+
+    async function saveElements(id) {
+  try {
+    const token = localStorage.getItem("TOKEN");
+    const payload = {
+      elements: JSON.parse(JSON.stringify(boardState.elements)),
+    };
+
+
+    const response = await fetch(`https://backend-li1v.onrender.com/api/canvas/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': token,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to save: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    console.log("Save successful:", result);
+  } catch (error) {
+    console.error("Error saving canvas elements:", error.message);
+  }
+}
+
+    async function boardMOuseUpHandler()
     {
       if(boardState.activeToolItem===TOOL_ITEMS.TEXT) return;
       dispatchBoardAction({type:BOARD_ACTION.DRAW_UP})
+      await saveElements(id);
+      await saveElements(id);
     }
-    function undoRedoHandler(option)
+    async function undoRedoHandler(option)
     {
-      dispatchBoardAction({type:option})
+      dispatchBoardAction({type:option});
+      await saveElements(id);
+      await saveElements(id);
     }
-    function textAreaBlueHandler(text)
+    async function textAreaBlueHandler(text)
     {
       dispatchBoardAction({
         type:BOARD_ACTION.CHANGE_TEXT,
@@ -205,6 +297,8 @@ const BoardProvider = ({children}) => {
           text,
         }
       })
+      await saveElements(id);
+      await saveElements(id);
     }
     function handleDownloadClick(e){
       e.preventDefault();
