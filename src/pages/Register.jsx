@@ -7,6 +7,7 @@ const Register = () => {
   const actionData = useActionData();
   const navigate = useNavigate();
   const [message,setmessage]=useState({});
+  const [submit,setsubmit]=useState(false);
   useEffect(() => {
     if (actionData?.success) {
       navigate('/');  
@@ -14,7 +15,9 @@ const Register = () => {
   }, [actionData, navigate]);
 
   async function handleRegister(event) {
+    setmessage({})
     event.preventDefault();
+    setsubmit(true);
     const formData = new FormData(event.target);
     const payload = {
       name: formData.get('name'),
@@ -35,14 +38,26 @@ const Register = () => {
           success:true,
           message:"Successfully registered"
         })
+        setsubmit(false);
+        await setTimeout(()=>{
+
+        },1000)
         navigate('/');
-      } 
+      }
+      else{
+        setmessage({
+          success:false,
+          message:"failed to register the user"
+        })
+        setsubmit(false);
+      }
     } catch (error) {
       alert(`Error: ${error.message}`);
       setmessage({
           success:false,
           message:"user Registration Failed"
         })
+        setsubmit(false);
     }
   }
 
@@ -52,6 +67,9 @@ const Register = () => {
         <h2 className="text-2xl font-bold text-center mb-4">Register</h2>
         {message!={} && (
           <p className={`${classes.message} ${message.success ? 'text-green-600' : 'text-red-600'}`}>{message.message}</p>
+        )}
+        {submit && (
+          <p className={`${classes.message}`}>Validating Credentials..</p>
         )}
         <form onSubmit={handleRegister}>
           <div>

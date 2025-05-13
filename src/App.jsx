@@ -32,36 +32,11 @@ import Register from './pages/Register';
 //   }
 // };
 
-const handleLoginAction = async ({ request }) => {
-  const formData = await request.formData();
-  const email = formData.get('email');
-  const password = formData.get('password');
-
-  const response = await fetch('https://backend-li1v.onrender.com/api/users/login', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email, password }),
-  });
-  
-  const data = await response.json();
-  if(response.ok)
-  {
-    localStorage.setItem("TOKEN",data.token);
-    return {success:true,message:"Login successful"}
-  }
-  else{
-    return {success: false, message: "Invalid credentials" }
-  }
-};
-
 // Router configuration
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Login />,
-    action: handleLoginAction,  // Attach the action to the Login route
   },
   {
     path: '/profile',
